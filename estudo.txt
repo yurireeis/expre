@@ -1,0 +1,146 @@
+- modo formal de se especificar um padrão de texto;
+- essa expressão é tratada como uma regra;
+- pode ser usada em diversos aplicativos;
+- símbolo = metacaracteres;
+- match = casar;
+- pattern = padrão;
+- usado para validar data, email, senha, etc;
+
+====
+
+metacaracteres:
+
+- cada símbolo tem uma função específica
+
+> grupos:
+
+  representantes
+
+    .     (ponto)       = significa um caracter qualquer
+    []    (lista)       = lista de caracteres permitidos
+    [^]   (lista)       = lista de caracteres proibidos
+
+  quantificadores
+
+    ?     (opcional)    = zero ou um
+    *     (asterisco)   = zero, um ou mais
+    +     (mais)        = um ou mais
+    {x,y} (chaves)      = de x até y ex.: {1 a 10}
+
+  âncoras
+
+    $     (cifrão)      = fim da linha
+    ^     (circunflexo) = início da linha
+    \b    (borda)       = início ou fim da palavra
+
+  outros
+
+    \     (escape)      = torna literal o caractere
+    ()    (grupo)       = delimita um grupo
+    |     (pipe)        = ou um ou outro
+    \1    (retrovisor)  = texto casado
+
+====
+
+PONTO .
+
+- coringa que casa com qualquer caractere
+
+ex.: .ython = casa com python, Python, Cython ou qualquer caractere no início.
+
+LISTA []
+
+- especifica caracteres permitidos para casar
+- bem menos abrangente do que o ponto
+- o traço (-) representa o invervalo entre dois caracteres.
+- o traço no final da lista é um literal.
+- para lista com caracteres acentuados temos a lista de caracteres POSIX (padrão internacional)
+- [[:lower:]] representa de a-z com letras acentuadas
+- [[:upper:]] representa de A-Z com letras acentuadas
+- [[:alnum:]] representa letras e números
+
+ex.: [Pp]ython = casa com python, Python, mas não Cython.
+obs.: ponto dentro de uma lista não é um metacaractere, e sim um literal!
+
+LISTA NEGADA [^]
+
+- o circunflexo dentro da lista negada como primeiro caractere indica que é uma lista negada
+- caso queira como literal o circunflexo deverá estar em qualquer posição da lista que não seja a primeira
+- também é possível negar um intervalo
+- também é possível utilizar as classes POSIX ex.: [^[:upper:]]
+
+OPCIONAL ?
+
+- representado pelo ponto de interrogação
+- pode ter ou não ter o caractere
+- pode vir ao lado de um caractere, o tornando opcional
+- pode vir ao lado de uma lista de caracteres, tornado-os opcionais naquela posição
+
+
+ASTERISCO *
+
+- também chamado de "tanto faz"
+- pra ele pode ter, não ter ou ter vários ex.: 8*0, casa com 0, 80, 880, 8880 e por aí vaí
+- pode ser usado em uma lista ex.: te[to]*, casa com te, tet, teto, teot...
+
+METACARACTERE CORINGA .*
+
+- significa qualquer caractere em qualquer quantidade
+- pode ser usado entre duas palavras, tags, etc ex.: <.>.*<.>
+- se for utilizado sozinho, qualquer texto será considerado um match
+
+METACARACTERE MAIS +
+
+- simboliza a obrigação de uma ou mais repetições ex.: 8+2, casa com 82, 882, porém não somente o 2
+- pode ser utilizado com lista também ex.: py[th]on, casa com python, pyhon, pyton porém não com pyon (sem a presença de um dos caracteres)
+
+CHAVES {}
+
+- representa a repetição controlada
+- você pode definir um caracter e quantas vezes ele pode aparecer ex.: 8{1,3} casa com 8, 88, 888 mas não com 8888
+- também pode representar "pelo menos" e no máximo ex.: 8{4,} ou 8{0,4} que seria no mínimo 4 repetições do oito ou no máximo 4 repetições do 8
+- pode ser também exatamente ex.: 8{4}
+
+CIRCUNFLEXO ^ (ou âncora)
+
+- marca o começo da linha
+
+CIFRÃO $
+
+- marca o fim de uma linha
+- só é válido ao final de uma expressão regular ex.: [0-9]$ casa com linhas que terminam com um número
+- ^$ vai buscar por uma linha vazia!
+- linhas que tenham uma determinada quantidade de caracteres podem ser buscadas desta forma ex.: ^.{10,20}$ linhas entre 10 a 20 caracteres
+- ...$ pode pegar os três últimos caracteres de uma linha
+
+BORDA \b
+
+- força o começo/terminação de uma palavra
+- muito útil para casar palavras exatas ou as bordas ex.: dia\b casa com melodia, tardia mas não com diafragma
+
+ESCAPE \
+
+- dentro da lista qualquer caractere é literal (menos a negação como primeiro caractere)
+- não é necessário criar uma lista para um determinado metacaractere. para isso é usado o escape
+- o escape pode escapar a si próprio \\
+
+OU | (ou pipe)
+
+- quando for possível mais de um padrão
+- indica alternativas
+
+GRUPO ()
+
+- são definidos como parênteses
+- serve para agrupar
+- é possível ter grupos dentro de grupos (subgrupos)
+- serve para demarcar (são quantificáveis)
+
+RETROVISOR \1 á 9
+
+- serve para casar trechos que já foram casados ex.: (casa)-\1 dará match em caso de casa-casa
+- para casar trechos sem um caractere basta torná-lo opcional ex.: (casa)-?\1 dará match em caso de casacasa
+- não há escape de números de 1 a 9 (pois aí se torna um retrovisor)
+- podemos ter no máximo 9 retrovisores por expressão regular
+- serve pra procurar palavras repetidas
+- só serve em expressões que tem um grupo
